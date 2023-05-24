@@ -1,4 +1,4 @@
-import ProductModel from "../models/productSchema.js";
+import ProductModel from '../../models/productSchema.js'
 import { body, param } from 'express-validator'
 
 async function checkExistingCode(code) {

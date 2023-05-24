@@ -1,4 +1,4 @@
-import ProductModel from "../models/productSchema.js";
+import ProductModel from "../../models/productSchema.js";
 //import { param } from 'express-validator'
 
 
