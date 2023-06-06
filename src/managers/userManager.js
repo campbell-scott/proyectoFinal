@@ -1,46 +1,37 @@
 import UserDao from "../daos/userMongooseDaos.js";
 
-class UserManager
-{
-  constructor()
-  {
-     this.UserDao = new UserDao();
+class UserManager {
+  constructor() {
+    this.UserDao = new UserDao();
   }
 
-  async getUsers(criteria)
-  {
-    return this.UserDao.getUsers(criteria);
+  async getUsers(limit, page) {
+    return this.UserDao.getUsers(limit, page);
   }
 
-  async getUser(id)
-  {
+  async getUser(id) {
     return this.UserDao.getUser(id);
   }
 
-  async getUserByEmail(email)
-  {
+  async getUserByEmail(email) {
     return this.UserDao.getUserByEmail(email);
   }
 
-  async addUser(data)
-  {
+  async addUser(data) {
     const user = await this.UserDao.addUser(data);
 
     return { ...user, password: undefined };
   }
 
-  async updateUser(id, data)
-  {
+  async updateUser(id, data) {
     return this.UserDao.updateUser(id, data);
   }
 
-  async deleteUser(id)
-  {
+  async deleteUser(id) {
     return this.UserDao.deleteUser(id);
   }
 
-  async forgetPassword(dto)
-  {
+  async forgetPassword(dto) {
     const user = await this.UserDao.getUserByEmail(dto.email);
     user.password = dto.password;
 

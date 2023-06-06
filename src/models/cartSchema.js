@@ -9,7 +9,6 @@ const CartSchema = new Schema({
         default: []
     }
 });
- 
 
 const CartModel = mongoose.model( 'carts', CartSchema);
 

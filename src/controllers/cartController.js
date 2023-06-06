@@ -1,5 +1,5 @@
 import CartManager from '../managers/cartManager.js'
-import CartValidation from "../middlewares/validations/cartsValidations.js"
+import CartValidation from "../middlewares/cartsValidations.js"
 
 class CartController {
   static addCart = async (req, res) => {

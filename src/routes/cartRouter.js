@@ -1,20 +1,15 @@
 import { Router } from "express";
 import CartController from "../controllers/cartController.js";
-//import CartValidation from "../middlewares/validations/cartsValidations.js"
+//import CartValidation from "../middlewares/cartsValidations.js"
 
-const CartRouter = Router()
+const CartRouter = Router();
 
-CartRouter.post( '/', CartController.addCart)
-
-CartRouter.get('/:cid', CartController.getCart)
-
-CartRouter.post('/:cid/products/:pid', CartController.addProduct)
-
-CartRouter.delete('/:cid/products/:pid', CartController.deleteProduct)
-
-CartRouter.put('/:cid/products/:pid', CartController.updateProductQuantity)
-
-CartRouter.delete('/:cid', CartController.deleteProducts)
+CartRouter.post( '/', CartController.addCart);
+CartRouter.get('/:cid', CartController.getCart);
+CartRouter.post('/:cid/products/:pid', CartController.addProduct);
+CartRouter.delete('/:cid/products/:pid', CartController.deleteProduct);
+CartRouter.put('/:cid/products/:pid', CartController.updateProductQuantity);
+CartRouter.delete('/:cid', CartController.deleteProducts);
 
 
-export default CartRouter
+export default CartRouter;

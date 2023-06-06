@@ -1,25 +1,28 @@
 import ProductModel from '../models/productSchema.js'
 
 class ProductDaos {
-  async getProducts(limit, category, sort) {
-    const query = category ? { category } : {}
-    const limitQuery = limit ? { limit } : {}
-    const sortQuery = sort === 'asc' ? { price: 1 } : sort === 'desc' ? { price: -1 } : {}
-    const products = await ProductModel.find(query, {}, limitQuery).sort(sortQuery)
+  async getProducts( limit, page ) {
+    
+    const options = {
+      page: parseInt(page) || 1,
+      limit: parseInt(limit) || 10,
+    };
+    
+    const products = await ProductModel.paginate( {}, options)
 
-    return products.map(
-      ({ _id, title, category, description, code, thumbnail, price, stock, status }) => ({
-        id: _id,
-        title,
-        category,
-        description,
-        code,
-        thumbnail,
-        price,
-        stock,
-        status
-      })
-    )
+    products.docs = products.docs.map(document => ({
+      id: document._id,
+      title: document.title,
+      category: document.category,
+      description: document.description,
+      code: document.code,
+      thumbnail: document.thumbnail,
+      price: document.price,
+      stock: document.stock,
+      status: document.status,
+    }));
+
+    return products
   }
 
   async getProductById(id) {

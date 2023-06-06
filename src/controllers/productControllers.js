@@ -4,9 +4,9 @@ class ProductController {
   static getProducts = async (req, res) => {
     try {
       const Manager = new ProductManager();
-      const { limit, category, sort } = req.query
+      const { limit, page } = req.query
 
-      const products = await Manager.findAll(limit, category, sort)
+      const products = await Manager.findAll(limit, page)
 
       res.status(200).send({ 
         status: 'success', 

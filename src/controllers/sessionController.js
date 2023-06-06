@@ -1,22 +1,19 @@
 import UserManager from "../managers/userManager.js";
 import { createHash, generateToken, isValidPassword } from "../shared/index.js";
 
-export const login = async  (req, res) =>
-{
+export const login = async  (req, res) => {
     const { email, password } = req.body;
 
-    if (!email && !password)
-    {
+    if (!email && !password) {
 
-        throw new Error('Email and Password invalid format.');
+        throw new Error('Empty Email or Password.');
     }
     
     const manager = new UserManager();
     const user = await manager.getUserByEmail(email);
     const isHashedPassword = await isValidPassword(password, user.password);
 
-    if (!isHashedPassword)
-    {
+    if (!isHashedPassword) {
         return res.status(401).send({ message: 'Login failed, invalid password.'})
     }
 
@@ -25,16 +22,14 @@ export const login = async  (req, res) =>
     res.cookie('accessToken', accessToken, {
         maxAge: 60*60*1000,
         httpOnly: true
-    }).send({ message: 'Login success!' })
+    }).send({ message: 'Login success!', accessToken })
 };
 
-export const current = async  (req, res) =>
-{
+export const current = async  (req, res) => {
   res.status(200).send({ status: 'Success', payload: req.user });
 };
 
-export const signup = async (req, res) =>
-{
+export const signup = async (req, res) => {
     const manager = new UserManager();
 
     const dto = {

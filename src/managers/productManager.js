@@ -5,8 +5,8 @@ class ProductManager {
     this.ProductDaos = new ProductDaos()
   }
 
-  async findAll(limit, category, sort) {
-    return this.ProductDaos.getProducts(limit, category, sort)
+  async findAll(limit, page) {
+    return this.ProductDaos.getProducts(limit, page)
   }
 
   async findById(id) {

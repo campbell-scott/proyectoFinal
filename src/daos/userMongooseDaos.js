@@ -1,32 +1,26 @@
 import UserModel from "../models/userSchema.js";
 
 class UserDao {
-  async getUsers(criteria) {
-    const { limit, page } = criteria;
-  
-    if (!limit) {
-      const limit = 10
-    }
+  async getUsers( limit, page ) {
 
-    const users = await UserModel.find(/*{}, { limit, page }*/);
+    const options = {
+      page: parseInt(page) || 1,
+      limit: parseInt(limit) || 10,
+    };
 
-    /*users.docs = users.docs.map(document => ({
+    const users = await UserModel.paginate( {}, options );
+
+    users.docs = users.docs.map(document => ({
       id: document._id,
       firstName: document.firstName,
       lastName: document.lastName,
       email: document.email,
-      age: document.age
-    }));*/
+      age: document.age,
+      role: document.role,
+      ...(document.isAdmin ? { isAdmin: document.isAdmin } : {})
+    }));
 
-    return users.map(
-    ({ _id, firstName, lastName, email, age }) => ({
-      id: _id,
-      firstName,
-      lastName,
-      email,
-      age
-    })
-  )
+    return users
   }
 
   async getUser(id) {
