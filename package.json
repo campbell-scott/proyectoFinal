@@ -5,20 +5,25 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon",
+    "command": "node src/command.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "SC",
   "type": "module",
   "license": "ISC",
   "dependencies": {
+    "awilix": "^8.0.1",
+    "bcrypt": "^5.1.0",
+    "commander": "^11.0.0",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
-    "mongoose": "^7.1.0",
-    "nodemon": "^2.0.22",
-    "bcrypt": "^5.1.0",
-    "cookie-parser": "^1.4.6",
     "jsonwebtoken": "^9.0.0",
-    "mongoose-paginate-v2": "^1.7.1"
+    "mongoose": "^7.1.0",
+    "mongoose-paginate-v2": "^1.7.1",
+    "nodemailer": "^6.9.3",
+    "nodemon": "^2.0.22",
+    "shelljs": "^0.8.5"
   }
 }

@@ -1,33 +1,16 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
-import express from 'express';
-import mongoose from "mongoose";
-import cookieParser from "cookie-parser";
-
-import ProductRouter from "./routes/productRouter.js";
-import CartRouter from './routes/cartRouter.js';
-import SessionRouter from './routes/sessionRouter.js'
-import UserRouter from './routes/userRouter.js'
+import AppFactory from "./presentation/factories/appFactory.js";
+import DbFactory from "./data/factories/dbFactory.js";
 
 void (async() => {
-    await mongoose.connect( process.env.MONGO_DB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-      });
+  const db = DbFactory.create(process.env.DB);
+  db.init(process.env.DB_URI);
 
-    const app = express();
+  const app = AppFactory.create();
 
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-    app.use(cookieParser());
-
-    app.use('/api/products', ProductRouter)
-    app.use('/api/carts', CartRouter)
-    app.use('/api/sessions', SessionRouter);
-    app.use('/api/users', UserRouter);
-
-    app.listen(8081, () => {
-      console.log('Server listening on port 8081');
-    });
+  app.init();
+  app.build();
+  app.listen();
 })();
