@@ -11,6 +11,9 @@
   "author": "SC",
   "type": "module",
   "license": "ISC",
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "awilix": "^8.0.1",
     "bcrypt": "^5.1.0",
