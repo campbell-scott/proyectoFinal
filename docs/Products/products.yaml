@@ -1,0 +1,117 @@
+paths:
+  /api/products/:
+    get:
+      tags:
+        - 'Products'
+      summary: 'Return a list of products'
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Number of users to retrieve (optional)
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number (optional)
+      operationId: 'getProducts'
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: 'A JSON array of products'
+          schema:
+            type: 'object'
+            properties:
+              products:
+                type: 'array'
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      tags:
+        - 'Products'
+      summary: 'Create a new product'
+      operationId: 'addProduct'
+      description: 'Allowed only for users roles that have addProduct'
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductBody'
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: 'Return created product'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: 'Invalid request body'
+        '401':
+          description: 'Empty authentication header!'
+        '403':
+          description: 'Authentication error'
+  /api/products/{id}:
+    get:
+      tags:
+        - 'Products'
+      summary: 'Get a product by id'
+      operationId: 'getProduct'
+      parameters:
+        - in: 'path'
+          name: id
+          required: true
+          schema:
+            type: string
+            description: 'ID of the product'
+      responses:
+        '200':
+          description: 'Return a product'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: 'Id not found.'
+        '400':
+          description: 'Invalid request body'
+    put:
+      tags:
+        - 'Products'
+      summary: 'Update a product'
+      operationId: 'updateProduct'
+      description: 'Allowed only for users roles that have updateProduct'
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductBody'
+    delete:
+      tags:
+        - 'Products'
+      summary: 'Delete a product by id'
+      operationId: 'deleteProduct'
+      description: 'Allowed only for users roles that have deleteProduct'
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: 'ID of the product to delete'
+    responses:
+      '200':
+        description: 'Product deleted.'
+      '404':
+        description: 'Id not found.'

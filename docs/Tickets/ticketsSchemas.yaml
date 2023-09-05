@@ -1,0 +1,43 @@
+components:
+  schemas:
+    Ticket:
+      type: 'object'
+      properties:
+        purchaseDateTime:
+          type: 'date'
+        purchaser:
+          type: 'string'
+        amount:
+          type: 'number'
+        status:
+          type: 'string'
+        products:
+          type: 'array'
+          items:
+            type: 'object'
+            properties:
+              _id:
+                type: 'string'
+              quantity:
+                type: 'number'
+    TicketBody:
+      type: 'object'
+      properties:
+        purchaser:
+          type: 'string'
+        amount:
+          type: 'number'
+        products:
+          type: 'array'
+          items:
+            type: 'object'
+            properties:
+              _id:
+                type: 'string'
+              quantity:
+                type: 'number'
+    TicketPaymentBody:
+      type: 'object'
+      properties:
+        paymentToken:
+          type: 'string'

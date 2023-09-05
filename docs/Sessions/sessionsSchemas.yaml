@@ -1,0 +1,49 @@
+components:
+  schemas:
+    NewUser:
+      type: 'object'
+      properties:
+        firstname:
+          type: 'string'
+        lastname:
+          type: 'string'
+        age:
+          type: 'number'
+        email:
+          type: 'string'
+        password:
+          type: 'string'
+    Login:
+      type: 'object'
+      properties:
+        email:
+          type: 'string'
+        password:
+          type: 'string'
+    Auth:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        firstname:
+          type: 'string'
+        lastname:
+          type: 'string'
+        age:
+          type: 'number'
+        email:
+          type: 'string'
+        isAdmin:
+          type: 'boolean'
+        role:
+          type: 'array'
+          items:
+            type: 'object'
+            properties:
+              id:
+                type: 'string'
+    Email:
+      type: 'object'
+      properties:
+        email:
+          type: 'string'

@@ -1,0 +1,40 @@
+components:
+  schemas:
+    Product:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        title:
+          type: 'string'
+        category:
+          type: 'string'
+        description:
+          type: 'string'
+        code:
+          type: 'string'
+        thumbnail:
+          type: 'string'
+        price:
+          type: 'number'
+        stock:
+          type: 'number'
+        status:
+          type: 'boolean'
+    ProductBody:
+      type: 'object'
+      properties:
+        title:
+          type: 'string'
+        category:
+          type: 'string'
+        description:
+          type: 'string'
+        code:
+          type: 'string'
+        thumbnail:
+          type: 'array'
+        price:
+          type: 'number'
+        stock:
+          type: 'number'

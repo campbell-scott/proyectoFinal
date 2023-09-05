@@ -1,13 +1,16 @@
 import container from '../../container.js';
-import { createHash } from '../../shared/index.js'
+import singUpValidation from '../validations/user/singupValidation.js'
+import updateUserValidation from '../validations/user/updateUserValidation.js'
+import { forgetPasswordMail } from './mailManager.js'
+import { generatePasswordToken } from '../../shared/index.js';
 
 class UserManager {
   constructor() {
     this.UserRepository = container.resolve('UserRepository');
   };
 
-  async getUsers(limit, page) {
-    return this.UserRepository.getUsers(limit, page);
+  async getUsers(limit, page, filter) {
+    return this.UserRepository.getUsers(limit, page, filter);
   };
 
   async getUser(id) {
@@ -19,14 +22,16 @@ class UserManager {
   };
 
   async addUser(data) {
-    data.password = await createHash(data.password, 10)
+    await singUpValidation.parseAsync(data);
+
     const user = await this.UserRepository.addUser(data);
     
-    console.log(user)
     return user;
   };
 
   async updateUser(id, data) {
+    await updateUserValidation.parseAsync(data);
+
     return this.UserRepository.updateUser(id, data);
   };
 
@@ -34,12 +39,46 @@ class UserManager {
     return this.UserRepository.deleteUser(id);
   };
 
-  async forgetPassword(dto) {
-    const user = await this.UserRepository.getUserByEmail(dto.email);
-    user.password = dto.password;
-
-    return this.UserRepository.updateUser(user.id, user);
+  async renderResetPasswordPage(token, email) {
+    const user = await this.UserRepository.getUserByEmail(email);
+    
+    const templateData = {
+      username: user.firstName,
+      resetLink: `http://localhost:8081/api/sessions/reset-password?token=${token}`
+    };
+    
+    return templateData
   };
+
+  async resetPassword(email, newPassword) {
+    const user = await this.UserRepository.getUserByEmail(email);
+    user.password = newPassword;
+
+    this.UserRepository.updateUser(user.id, user);
+  };
+
+  async requestReset(email) {
+    const user = await this.UserRepository.getUserByEmail(email);
+    
+    if (!user) {
+      return new Error(`Invalid email.`);
+    }
+    
+    const token = await generatePasswordToken(user)
+
+    await forgetPasswordMail(email, user.firstName, token)
+
+    return user.email
+  };
+
+  async performDeletion() {
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 7);
+
+    const result = await this.UserRepository.performDeletion(twoDaysAgo);
+
+    return result
+  }
 }
 
 export default UserManager;

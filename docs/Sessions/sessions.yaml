@@ -1,0 +1,86 @@
+paths:
+  /api/sessions/signup:
+    post:
+      tags:
+        - 'Sessions'
+      summary: 'User signup'
+      operationId: 'signup'
+      produces:
+        - 'application/json'
+      requestBody:
+        required: true
+        description: 'User to be created'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        '200':
+          description: 'User created'
+          schema:
+            $ref: '#/components/schemas/Auth'
+        '400':
+          description: 'Invalid data in request body'
+  /api/sessions/login:
+    post:
+      tags:
+        - 'Sessions'
+      summary: 'User login'
+      operationId: 'login'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: body
+          name: credentials
+          description: 'User credentials'
+          required: true
+          schema:
+            $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: 'Login success!'
+          schema:
+            type: 'object'
+            properties:
+              accessToken:
+                type: 'string'
+        '401':
+          description: 'Invalid email or password'
+  /api/sessions/current:
+    get:
+      tags:
+        - 'Sessions'
+      summary: 'Get current user'
+      operationId: 'current'
+      security:
+        - BearerAuth: []
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: 'Current user details'
+          schema:
+            $ref: '#/components/schemas/Auth'
+        '401':
+          description: 'Empty authentication header!'
+        '403':
+          description: 'Authentication error'
+  /api/sessions/forgot-password:
+    get:
+      tags:
+        - 'Sessions'
+      summary: 'Change password'
+      operationId: 'requestReset'
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: body
+          name: 'email'
+          required: true
+          schema:
+            $ref: '#/components/schemas/Email'
+      responses:
+        '200':
+          description: 'We send the instructions to your mailbox: {email}'
+        '404':
+          description: "User don't exist."

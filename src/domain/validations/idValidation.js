@@ -1,11 +1,9 @@
-import { param } from 'express-validator'
+import z from 'zod';
 
-export const idValidation = [
-    param('id')
-        .trim()
-        .notEmpty()
-        .withMessage('Empty id')
-        .isMongoId()
-        .withMessage('Invalid id')
-        .escape(),
-];
+const idValidation = z.object({
+  id: z
+    .string()
+    .length(24, { message: "Invalid id." })
+});
+
+export default idValidation;

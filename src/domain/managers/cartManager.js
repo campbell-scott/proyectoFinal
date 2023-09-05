@@ -1,5 +1,6 @@
 import container from '../../container.js';
-import { generateTicketMail } from '../../shared/index.js';
+import { generateTicketMail } from './mailManager.js'
+import productInCartValidation from '../validations/cart/cartsValidation.js'
 
 class CartManager {
   constructor() {
@@ -17,6 +18,8 @@ class CartManager {
   };
 
   async addProduct(cid, pid) {
+    await productInCartValidation(pid);
+
     return this.CartRepository.addProduct(cid, pid);
   };
 
@@ -41,11 +44,11 @@ class CartManager {
       const productStock = await this.ProductRepository.getProductById(product._id)
       
       if (productStock.stock === 0) {
-        return new Error(`Product ${productStock.title} out of stock.`);
+        throw new Error(`Product ${productStock.title} out of stock.`);
       }
 
       if (productStock.stock - product.quantity < 0) {
-        return new Error(`We only have ${productStock.stock} in stock of ${productStock.title}.`);
+        throw new Error(`We only have ${productStock.stock} in stock of ${productStock.title}.`);
       }
 
       totalAmount += productStock.price * product.quantity
@@ -58,16 +61,18 @@ class CartManager {
 
       await this.ProductRepository.updateProduct(product._id, updateData);
     }
-    
+
     const ticket =  await this.TicketRepository.addTicket({
       purchaser: email,
       amount: totalAmount,
       products: cart.products
     })
 
+    await this.CartRepository.deleteCart(cid);
+    
     generateTicketMail(ticket)
     return ticket
   }
 };
 
-export default CartManager;  
+export default CartManager;

@@ -1,12 +1,23 @@
 import CartModel from '../../models/mongoose/cartSchema.js'
+import Cart from '../../../domain/entities/cart.js'
 
 class CartMongooseRepository {
   async addCart() {
-    return CartModel.create({ products: [] })
+    const cart = await CartModel.create({ products: [] })
+
+    return new Cart({
+      id: cart?._id,
+      products: cart?.products
+    });
   }
 
   async getCart(cid) {
-    return CartModel.findById({ _id: cid })
+    const cart = await CartModel.findById({ _id: cid })
+
+    return new Cart({
+      id: cart?._id,
+      products: cart?.products
+    });
   }
 
   async addProduct(cid, pid) {
@@ -17,37 +28,65 @@ class CartMongooseRepository {
     )
 
     if (updatedCart) {
-      return updatedCart
+      return new Cart({
+        id: updatedCart?._id,
+        products: updatedCart?.products
+      });
     }
     const newCart = await CartModel.findByIdAndUpdate(
       cid,
       { $addToSet: { products: { _id: pid, quantity: 1 } } },
       { new: true }
     )
-    return newCart
+
+    return new Cart({
+      id: newCart?._id,
+      products: newCart?.products
+    });
   }
 
   async deleteProduct(cid, pid) {
-    return CartModel.findByIdAndUpdate(
+    const cart = await CartModel.findByIdAndUpdate(
       cid,
       { $pull: { products: { _id: pid } } },
       { new: true }
     )
+
+    return new Cart({
+      id: cart?._id,
+      products: cart?.products
+    });
   }
 
   async updateProductQuantity(cid, pid, quantity) {
-    return CartModel.findOneAndUpdate(
+    const cart = await CartModel.findOneAndUpdate(
       { _id: cid, 'products._id': pid },
       { $set: { 'products.$.quantity': quantity } },
       { new: true }
     )
+
+    return new Cart({
+      id: cart?._id,
+      products: cart?.products
+    });
   }
 
   async deleteProducts(cid) {
-    return CartModel.findByIdAndUpdate(
+    const cart = await CartModel.findByIdAndUpdate(
       { _id: cid },
       { $set: { products: [] } },
       { new: true }
+    )
+
+    return new Cart({
+      id: cart?._id,
+      products: cart?.products
+    });
+  }
+
+  async deleteCart(cid) {
+    return await CartModel.findByIdAndDelete(
+      { _id: cid }
     )
   }
 }

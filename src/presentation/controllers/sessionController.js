@@ -1,4 +1,5 @@
 import UserManager from '../../domain/managers/userManager.js';
+import RoleManager from '../../domain/managers/roleManager.js'
 import { createHash, generateToken, isValidPassword } from '../../shared/index.js';
 
 export const login = async  (req, res, next) => {
@@ -15,21 +16,22 @@ export const login = async  (req, res, next) => {
         const isHashedPassword = await isValidPassword(password, user.password);
     
         if (!isHashedPassword) {
-            return res.status(401).send({ message: 'Login failed, invalid password.'})
+          return res.status(401).send({ message: 'Login failed, invalid password.'})
         }
+        await manager.updateUser(user.id, {lastLogin: new Date()})
     
         const accessToken = await generateToken(user);
     
         res.cookie('accessToken', accessToken, {
             maxAge: 60*60*1000,
             httpOnly: true
-        }).send({ message: 'Login success!', accessToken })
+        }).status(200).send({ message: 'Login success!', accessToken })
     } catch (e) {
         next(e)
     }
 };
 
-export const current = async  (req, res) => {
+export const current = async  (req, res, next) => {
     try {
         res.status(200).send({ status: 'Success', payload: req.user });
     } catch (e) {
@@ -37,16 +39,24 @@ export const current = async  (req, res) => {
     }
 };
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
     try {
-        const manager = new UserManager();
+        const uManager = new UserManager();
+        const rManager = new RoleManager()
+
+        if (!req.body.password) {
+          return res.status(401).send({ message: 'You must provide a password.'})
+        }
+
+        const role = await rManager.getRoles(10, 1, {name: 'user'})
 
         const dto = {
           ...req.body,
-          password: await createHash(req.body.password, 10)
+          password: await createHash(req.body.password, 10),
+          role: {_id: role.roles[0].id},
         }
-    
-        const user = await manager.addUser(dto);
+        
+        const user = await uManager.addUser(dto);
     
         res.status(201).send({ status: 'success', user, message: 'User created.' });
     } catch (e) {
@@ -54,19 +64,52 @@ export const signup = async (req, res) => {
     }
 };
 
-export const loginToPurchase = async  (email, password) => {
-    if (!email && !password) {
+export const renderResetPasswordPage = async (req, res, next) => {
+    try {
+      const email = req.user.email
+      const token = req.query.token
+      
+      const manager = new UserManager();
+      const data = await manager.renderResetPasswordPage(token, email);
+        
+      res.render('resetPasswordTemplate', data);
+    } catch (e) {
+      next(e);
+    };
+  };
+  
+  export const resetPassword = async (req, res, next) => {
+    try {
+      const newPassword = req.body.newPassword
+      const confirmPassword = req.body.confirmPassword
 
-        throw new Error('Empty Email or Password.');
-    }
+      if (newPassword != confirmPassword) {
+        return res.status(401).send({ message: 'invalid password.'})
+      }
+
+      const user = req.user
+
+      const password = await createHash(newPassword, 10)
+  
+      const manager = new UserManager();
+      await manager.resetPassword(user.email, password);
     
-    const manager = new UserManager();
-    const validUser = await manager.getUserByEmail(email);
-    const isHashedPassword = await isValidPassword(password, validUser.password);
-
-    if (!isHashedPassword) {
-        return res.status(401).send({ message: 'Login failed, invalid password.'})
-    }
-
-    return
-};
+      res.send({ status: 'success', message: 'Password changed successfully' });
+    } catch (e) {
+      next(e);
+    };
+  };
+  
+  export const requestReset = async (req, res, next) => {
+    try {
+      const { email } = req.body;
+      
+      const manager = new UserManager();
+      const user = await manager.requestReset(email);
+      console.log(user)
+  
+      res.send({ status: 'success', message: `We send the instructions to your mailbox: ${user}` });
+    } catch (e) {
+      next(e);
+    };
+  };

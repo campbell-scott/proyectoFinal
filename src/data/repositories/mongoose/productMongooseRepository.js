@@ -1,16 +1,20 @@
 import ProductModel from '../../models/mongoose/productSchema.js'
+import Product from '../../../domain/entities/product.js';
+import { query } from 'express';
 
 class ProductMongooseRepository {
-  async getProducts( limit, page ) {
+  async getProducts( limit, page, filters ) {
     
     const options = {
       page: parseInt(page) || 1,
       limit: parseInt(limit) || 10,
     };
-    
-    const products = await ProductModel.paginate( {}, options)
 
-    products.docs = products.docs.map(document => ({
+    const productDocuments = await ProductModel.paginate( filters, options)
+    const { docs, ...pagination } = productDocuments;
+
+
+    const products = docs.map(document => new Product({
       id: document._id,
       title: document.title,
       category: document.category,
@@ -22,13 +26,13 @@ class ProductMongooseRepository {
       status: document.status,
     }));
 
-    return products
+    return { products, pagination };
   }
 
   async getProductById(id) {
-    const product = await ProductModel.findById(id)
+    const product = await ProductModel.findById({ _id: id })
     if (!product) return null
-    return {
+    return new Product ({
       id: product._id,
       title: product.title,
       category: product.category,
@@ -38,28 +42,59 @@ class ProductMongooseRepository {
       price: product.price,
       stock: product.stock,
       status: product.status
-    }
+    })
   }
   
   async addProduct(newProduct) {
-    const { title, category, description, code, thumbnail, price, stock } = newProduct
-    return ProductModel.create({
-      title,
-      category,
-      description,
-      code,
-      thumbnail,
-      price,
-      stock
+    const product = await ProductModel.create(newProduct)
+    
+    return new Product ({
+      id: product._id,
+      title: product.title,
+      category: product.category,
+      description: product.description,
+      code: product.code,
+      thumbnail: product.thumbnail,
+      price: product.price,
+      stock: product.stock,
+      status: product.status
     })
   }
 
   async updateProduct(id, updates) {
-    return ProductModel.findByIdAndUpdate(id, updates, { new: true })
+    const product = await ProductModel.findOneAndUpdate({ _id: id }, updates, { new: true })
+    
+    if(!product) {
+      throw new Error('Product dont exist.');
+    }
+
+    return new Product ({
+      id: product?._id,
+      title: product.title,
+      category: product.category,
+      description: product.description,
+      code: product.code,
+      thumbnail: product.thumbnail,
+      price: product.price,
+      stock: product.stock,
+      status: product.status
+    })
   }
 
   async deleteProduct(id) {
-    return ProductModel.findByIdAndUpdate(id, { status: false }, { new: true })
+    const product = await ProductModel.findOneAndUpdate({ _id: id }, { status: false }, { new: true })
+
+    return new Product ({
+      id: product._id,
+      title: product.title,
+      category: product.category,
+      description: product.description,
+      code: product.code,
+      thumbnail: product.thumbnail,
+      price: product.price,
+      stock: product.stock,
+      status: product.status
+    })
   }
 }
 

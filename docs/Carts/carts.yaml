@@ -1,0 +1,175 @@
+paths:
+  /api/carts/:
+    post:
+      tags:
+        - 'Carts'
+      summary: 'Create a new cart'
+      operationId: 'addCart'
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: 'Return created cart'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+  /api/carts/{id}:
+    get:
+      tags:
+        - 'Carts'
+      summary: 'Get a cart by id'
+      operationId: 'getCart'
+      parameters:
+        - in: 'path'
+          name: id
+          required: true
+          schema:
+            type: string
+            description: 'ID of the cart'
+      responses:
+        '404':
+          description: 'Id not found.'
+        '200':
+          description: 'Return a cart'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+    delete:
+      tags:
+        - 'Carts'
+      summary: 'Delete all products in a cart by id'
+      operationId: 'deleteProducts'
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: 'ID of the cart to delete all products'
+    responses:
+      '404':
+        description: 'Id not found.'
+      '200':
+        description: 'Return the empty cart'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+  /api/carts/{cid}/products/{pid}:
+    post:
+      tags:
+        - 'Carts'
+      summary: 'Add one product in a cart by id'
+      operationId: 'addProduct'
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: 'ID of the cart to add one product'
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+          description: 'ID of the product to add'
+      responses:
+        '404':
+          description: 'Id not found.'
+        '200':
+          description: 'Return the cart updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+    delete:
+      tags:
+        - 'Carts'
+      summary: 'Delete one product in a cart by id'
+      operationId: 'deleteProduct'
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: 'ID of the cart to delete one product'
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+          description: 'ID of the product to delete'
+      responses:
+        '404':
+          description: 'Id not found.'
+        '200':
+          description: 'Return the cart updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+    put:
+      tags:
+        - 'Carts'
+      summary: 'Update a product quantity in a cart by id'
+      operationId: 'updateProductQuantity'
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: 'ID of the cart to update one product quantity'
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+          description: 'ID of the product to update quantity'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartBody'
+      responses:
+        '404':
+          description: 'Id not found.'
+        '400':
+          description: 'Invalid request body'
+        '200':
+          description: 'Return the cart updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+  /api/carts/{id}/purchase:
+    post:
+      tags:
+        - 'Carts'
+      summary: 'Create a new ticket to proceed with the purchase'
+      operationId: 'checkout'
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: 'ID of the cart to proceed with the purchase'
+      responses:
+        '404':
+          description: 'Id not found.'
+        '422':
+          description: 'An error with the product stock'
+        '200':
+          description: 'Return the created ticket'
+          # content:
+          #   # application/json:
+          #   #   schema:
+          #   #     $ref: '#/components/schemas/'

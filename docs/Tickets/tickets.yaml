@@ -1,0 +1,142 @@
+paths:
+  /api/tickets:
+    get:
+      tags:
+        - 'Ticket'
+      summary: 'Return a list of tickets'
+      operationId: 'getTickets'
+      description: 'Allowed only for users roles that have getTickets'
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Number of users to retrieve (optional)
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number (optional)
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: 'A JSON array of tickets'
+          schema:
+            type: 'object'
+            properties:
+              products:
+                type: 'array'
+                items:
+                  $ref: '#/components/schemas/Ticket'
+        '401':
+          description: 'Empty authentication header!'
+        '403':
+          description: 'Authentication error'
+        '500':
+          description: 'Internal server error'
+  /api/tickets/{id}:
+    get:
+      tags:
+        - 'Ticket'
+      summary: 'Get ticket by id'
+      operationId: 'getTicket'
+      description: 'Allowed only for users roles that have getTicket'
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: 'path'
+          name: id
+          schema:
+            type: string
+          required: true
+          description: 'ID of the ticket'
+      responses:
+        '200':
+          description: 'Return a ticket'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '404':
+          description: 'Id not found.'
+        '500':
+          description: Internal server error
+    put:
+      tags:
+        - 'Ticket'
+      summary: 'Confirm payment of a ticket by id'
+      operationId: 'confirmPayment'
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: 'path'
+          name: id
+          schema:
+            type: string
+          required: true
+          description: 'ID of the ticket to confirm'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketPaymentBody'
+      responses:
+        '200':
+          description: 'Return confirmed ticket'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '400':
+          description: 'Invalid request body'
+        '401':
+          description: 'Payment failed, please try again.'
+        '404':
+          description: 'Id not found.'
+        '500':
+          description: Internal server error
+  /api/tickets/user:
+    get:
+      tags:
+        - 'Ticket'
+      summary: 'Get all ticket of the current user'
+      operationId: 'getTicketsUser'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 'Return tickets'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '404':
+          description: 'Ticket not found'
+        '500':
+          description: Internal server error
+  /api/tickets/payment/{id}:
+    get:
+      tags:
+        - 'Ticket'
+      summary: 'Generate payment intent of a ticket by id'
+      operationId: 'generatePaymentIntent'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 'Return tickets'
+          content:
+            application/json:
+              schema:
+                Payment:
+                  type: 'object'
+                  properties:
+                    clientSecret: 'string'
+        '404':
+          description: 'Id not found.'
+        '500':
+          description: Internal server error

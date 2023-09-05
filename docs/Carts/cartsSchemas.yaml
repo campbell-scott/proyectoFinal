@@ -1,0 +1,20 @@
+components:
+  schemas:
+    Cart:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        products:
+          type: 'array'
+          items:
+            type: 'object'
+            properties:
+              _id:
+                type: 'string'
+              quantity:
+                type: 'number'
+    CartBody:
+      type: 'objet'
+      properties:
+        quantity: 'number'
