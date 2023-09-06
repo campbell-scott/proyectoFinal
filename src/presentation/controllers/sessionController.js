@@ -64,6 +64,19 @@ export const signup = async (req, res, next) => {
     }
 };
 
+export const logout = async(req, res, next) => {
+  try{
+    const user = req.user
+
+    const manager = new UserManager();
+    await manager.updateUser(user.id, {lastLogin: new Date()})
+
+    res.status(200).send({ message: 'logout success!' }).clearCookie('accessToken');
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const renderResetPasswordPage = async (req, res, next) => {
     try {
       const email = req.user.email
