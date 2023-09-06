@@ -55,7 +55,7 @@ export const generateTicketMail = async (ticket) => {
   }
 };
 
-export const forgetPasswordMail = async (email, firstName, token) => {
+export const forgetPasswordMail = async (email, firstName, token, url) => {
   try {
     const transport = nodemailer.createTransport({
       service: 'gmail',
@@ -75,7 +75,7 @@ export const forgetPasswordMail = async (email, firstName, token) => {
         <h1 style="color: #f00; margin-bottom: 10px;">¡Hola ${firstName}!</h1>
         <p style="font-size: 16px;"><strong>Se solicitó un cambio de contraseña para su cuenta. Si no realizó esta solicitud, puede ignorar este correo electrónico.</strong></p>
         <h2 style="color: #333; font-size: 20px;">Para cambiar su contraseña, haga clic en el siguiente enlace y complete el formulario:</h2>
-        <p style="font-size: 16px; margin-top: 10px;"><a href="http://localhost:8081/api/sessions/reset-password?token=${token}" style="color: #007bff; text-decoration: none;">Cambiar Contraseña</a></p>
+        <p style="font-size: 16px; margin-top: 10px;"><a href="${url}/api/sessions/reset-password?token=${token}" style="color: #007bff; text-decoration: none;">Cambiar Contraseña</a></p>
       </div>
       <p style="font-size: 14px; color: #666; margin-top: 20px;">Si tiene alguna pregunta o necesita ayuda, no dude en contactarnos.</p>
     </div>`,

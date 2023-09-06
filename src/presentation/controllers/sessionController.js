@@ -68,9 +68,13 @@ export const renderResetPasswordPage = async (req, res, next) => {
     try {
       const email = req.user.email
       const token = req.query.token
+
+      const protocol = req.protocol;
+      const host = req.get('host');
+      const url = `${protocol}://${host}`
       
       const manager = new UserManager();
-      const data = await manager.renderResetPasswordPage(token, email);
+      const data = await manager.renderResetPasswordPage(url, token, email);
         
       res.render('resetPasswordTemplate', data);
     } catch (e) {
@@ -103,10 +107,13 @@ export const renderResetPasswordPage = async (req, res, next) => {
   export const requestReset = async (req, res, next) => {
     try {
       const { email } = req.body;
+
+      const protocol = req.protocol;
+      const host = req.get('host');
+      const url = `${protocol}://${host}`
       
       const manager = new UserManager();
-      const user = await manager.requestReset(email);
-      console.log(user)
+      const user = await manager.requestReset(email, url);
   
       res.send({ status: 'success', message: `We send the instructions to your mailbox: ${user}` });
     } catch (e) {

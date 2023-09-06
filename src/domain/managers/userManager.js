@@ -39,12 +39,12 @@ class UserManager {
     return this.UserRepository.deleteUser(id);
   };
 
-  async renderResetPasswordPage(token, email) {
+  async renderResetPasswordPage(url, token, email) {
     const user = await this.UserRepository.getUserByEmail(email);
     
     const templateData = {
       username: user.firstName,
-      resetLink: `http://localhost:8081/api/sessions/reset-password?token=${token}`
+      resetLink: `${url}/api/sessions/reset-password?token=${token}`
     };
     
     return templateData
@@ -57,7 +57,7 @@ class UserManager {
     this.UserRepository.updateUser(user.id, user);
   };
 
-  async requestReset(email) {
+  async requestReset(email, url) {
     const user = await this.UserRepository.getUserByEmail(email);
     
     if (!user) {
@@ -66,7 +66,7 @@ class UserManager {
     
     const token = await generatePasswordToken(user)
 
-    await forgetPasswordMail(email, user.firstName, token)
+    await forgetPasswordMail(email, user.firstName, token, url)
 
     return user.email
   };
