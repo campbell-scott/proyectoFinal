@@ -51,7 +51,10 @@ export const signup = async (req, res, next) => {
         const role = await rManager.getRoles(10, 1, {name: 'user'})
 
         const dto = {
-          ...req.body,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          age: req.body.age,
+          email: req.body.email,
           password: await createHash(req.body.password, 10),
           role: {_id: role.roles[0].id},
         }
