@@ -48,7 +48,20 @@ export const signup = async (req, res, next) => {
           return res.status(401).send({ message: 'You must provide a password.'})
         }
 
-        const role = await rManager.getRoles(10, 1, {name: 'user'})
+        let userRole = ''
+
+        const existingRole = await rManager.getRoles(10, 1, {name: 'user'})
+
+        if (existingRole.roles.length > 0) {
+          userRole = existingRole.roles[0].id;
+        } else {
+          const newRole = await rManager.addRole({
+            name: 'user',
+            permissions: ['getUser', 'getTicket'],
+          });
+        
+          userRole = newRole.role.id;
+        }
 
         const dto = {
           firstName: req.body.firstName,
@@ -56,7 +69,7 @@ export const signup = async (req, res, next) => {
           age: req.body.age,
           email: req.body.email,
           password: await createHash(req.body.password, 10),
-          role: {_id: role.roles[0].id},
+          role: {_id: userRole},
         }
         
         const user = await uManager.addUser(dto);
